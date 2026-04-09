@@ -9,7 +9,11 @@ type Tab = typeof TABS[number];
 
 export default function ReadingList( {readings } : { readings: Reading[] }) {
     const [activeTab, setActiveTab] = useState<Tab>('pornhwa');
-    const filtered = activeTab === 'all' ? readings : readings.filter((r) => r.type === activeTab);
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const filtered = (activeTab === 'all' ? readings : readings.filter((r) => r.type === activeTab))
+            .filter(r => r.title.toLowerCase().includes(search.toLowerCase()))
+            .filter(r => statusFilter === 'all' || r.status === statusFilter);
     return (
         <section className="flex-1 w-full">
             <div className="flex w-full gap-2 mb-4">
@@ -30,6 +34,23 @@ export default function ReadingList( {readings } : { readings: Reading[] }) {
                     </button>
                     );
                 })}
+                <input 
+                    type="text"
+                    value={search} 
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search..."
+                    className="border border-blue-500/30 bg-sky-900/80 text-white placeholder-slate-400 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-blue-400 flex-1"
+                />
+                <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400"
+                >
+                    <option value="all">All status</option>
+                    <option value="reading">Reading</option>
+                    <option value="completed">Completed</option>
+                    <option value="dropped">Dropped</option>
+                </select>
             </div>
            {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
