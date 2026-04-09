@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server';
 
 export default auth ((req) => {
     if(!req.auth) {
-          return NextResponse.redirect(new URL('/api/auth/signin', req.url));
+        // return NextResponse.redirect(new URL('/api/auth/signin', req.url)); - standart auth page
+        return NextResponse.redirect(new URL('/signin', req.url))
     }
 });
 
 export const config = {
-  matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico).*)'],
+  // matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api/auth|signin|_next/static|_next/image|favicon.ico).*)'],
 };
