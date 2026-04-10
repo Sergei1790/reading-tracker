@@ -33,20 +33,20 @@ export default function StarRating ({ value, onChange }: Props){
                     {/* star visual */}
                    <span className="absolute inset-0 flex items-center justify-center text-2xl select-none">
                         {display >= star ? (
-                            <span className="text-orange-400">★</span>
+                            <span className="text-highlight">★</span>
                         ) : display >= star - 0.5 ? (
-                            <span className="relative inline-block text-slate-300">
+                            <span className="relative inline-block text-muted/30">
                             ★
-                            <span className="absolute inset-0 overflow-hidden w-1/2 text-orange-400">★</span>
+                            <span className="absolute inset-0 overflow-hidden w-1/2 text-highlight">★</span>
                             </span>
                         ) : (
-                            <span className="text-slate-300">★</span>
+                            <span className="text-muted/30">★</span>
                         )}
                     </span>
                 </div>
             ))}
             {value > 0 && (
-                <span className="text-sm text-gray-500 self-center ml-1">{value}/5</span>
+                <span className="text-sm text-muted self-center ml-1">{value}/5</span>
             )}
         </div>
     );

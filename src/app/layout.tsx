@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Sund Reading Tracker",
-  description: "Track your Pornhwa, webnovels and anime",
+  description: "Track your manhwa, webnovels and anime",
 };
 
 export default async function RootLayout({
@@ -27,18 +27,21 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   return (
-<html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <header className="flex items-center justify-between px-6 py-4 border-b border-blue-500/20">
-          <span className="text-blue-200 font-semibold">Reading Tracker</span>
+        <header className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+          <span
+            className="font-semibold text-lg bg-clip-text text-transparent"
+            style={{ backgroundImage: 'linear-gradient(to right, var(--color-primary), var(--color-highlight))' }}
+          >Reading Tracker</span>
           {session?.user && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 bg-card/60 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2">
               {session.user.image && (
                 <Image src={session.user.image} alt="avatar" width={32} height={32} className="rounded-full" />
               )}
-              <span className="text-slate-400 text-sm">{session.user.name}</span>
+              <span className="text-muted text-sm">{session.user.name}</span>
               <form action={async () => { 'use server'; await signOut(); }}>
-                <button type="submit" className="text-slate-400 hover:text-white text-sm cursor-pointer transition-colors">
+                <button type="submit" className="text-muted hover:text-foreground text-sm cursor-pointer transition-colors">
                   Sign out
                 </button>
               </form>

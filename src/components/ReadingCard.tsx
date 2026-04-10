@@ -5,6 +5,12 @@ import {useState} from 'react'
 import StarRating from './StarRating';
 import type { Reading } from '@/types/reading';
 
+const statusColors: Record<string, { dot: string; text: string }> = {
+    reading: { dot: 'bg-success', text: 'text-success' },
+    completed: { dot: 'bg-primary', text: 'text-primary' },
+    dropped: { dot: 'bg-red-400', text: 'text-red-400' },
+};
+
 export default function ReadingCard({reading}: {reading: Reading}) {
     const [editing, setEditing] = useState(false);
     const [type, setType] = useState(reading.type);
@@ -13,12 +19,6 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     const [chapter, setChapter] = useState(reading.chapter);
     const [status, setStatus] = useState(reading.status);
     const [rating, setRating] = useState(reading.rating ?? 0);
-    const statusColors: Record<string, { dot: string; text: string }> = {
-        reading: { dot: 'bg-green-400', text: 'text-green-400' },
-        completed: { dot: 'bg-sky-400', text: 'text-sky-400' },
-        dropped: { dot: 'bg-red-400', text: 'text-red-400' },
-    };
-
 
     async function handleSave() {
         await updateReading(reading.id, { title, chapter, status, rating: rating || undefined, type, link: link || undefined });
@@ -26,19 +26,19 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     }
 
     return (
-        <li className="backdrop-blur-md bg-sky-900/80 border border-blue-500/20 rounded-xl p-5 hover:bg-sky-600/40 transition-colors">
-            <div className="font-semibold text-white text-lg">
+        <li className="bg-card border border-white/10 rounded-2xl p-5 hover:border-primary/40 transition-colors">
+            <div className="font-semibold text-foreground text-lg">
                 {link ? (
-                    <a href={link} target="_blank" rel="noopener noreferrer" className="hover:text-blue-300 transition-colors">
+                    <a href={link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                         {title}
                     </a>
                 ) : (
                     title
                 )}
             </div>
-            <div className="text-sm text-slate-300 mt-1 flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${statusColors[status]?.dot ?? 'bg-slate-400'}`} />
-                Chapter {chapter} · <span className={statusColors[status]?.text ?? 'text-slate-300'}>{status}</span>
+            <div className="text-sm text-muted mt-1 flex items-center gap-2">
+                <span className={`w-2 h-2 rounded-full ${statusColors[status]?.dot ?? 'bg-muted'}`} />
+                Chapter {chapter} · <span className={statusColors[status]?.text ?? 'text-muted'}>{status}</span>
                 {rating > 0 && ` · ${rating}★`}
             </div>
             <div className="flex gap-3 mt-2">
@@ -46,7 +46,7 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                     Delete
                 </button>
                 {!editing && (
-                    <button type="button" onClick={() => setEditing(true)} className="text-blue-400 text-sm hover:text-blue-300 transition-colors cursor-pointer">
+                    <button type="button" onClick={() => setEditing(true)} className="text-primary text-sm hover:text-primary/70 transition-colors cursor-pointer">
                         Edit
                     </button>
                 )}
@@ -54,24 +54,24 @@ export default function ReadingCard({reading}: {reading: Reading}) {
             {editing && (
                 <div className="mt-3 space-y-2">
                     <div className="flex gap-2 items-center flex-wrap">
-                        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400">
-                            <option value="pornhwa">Pornhwa</option>
+                        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60">
+                            <option value="manhwa">Manhwa</option>
                             <option value="webnovel">Webnovel</option>
                             <option value="anime">Anime</option>
                         </select>
-                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 w-24 focus:outline-none focus:border-blue-400 appearance-none" />
-                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 focus:outline-none focus:border-blue-400">
+                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-24 focus:outline-none focus:border-primary/60 appearance-none" />
+                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60">
                             <option value="reading">Reading</option>
                             <option value="completed">Completed</option>
                             <option value="dropped">Dropped</option>
                         </select>
                         <StarRating value={rating} onChange={setRating} />
                     </div>
-                    <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-blue-400" />
-                    <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-blue-500/30 bg-sky-900/80 text-white rounded-lg px-3 py-2 w-full focus:outline-none focus:border-blue-400" />
+                    <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+                    <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
                     <div className="flex gap-2">
-                        <button type="button" onClick={handleSave} className="bg-sky-600/80 hover:bg-sky-500/80 text-white text-sm px-3 py-1 rounded-lg transition-colors cursor-pointer">Save</button>
-                        <button type="button" onClick={() => setEditing(false)} className="text-slate-300 hover:text-slate-200 text-sm px-3 py-1 transition-colors cursor-pointer">Cancel</button>
+                        <button type="button" onClick={handleSave} className="bg-primary hover:bg-primary/80 text-white text-sm px-3 py-1 rounded-xl transition-colors cursor-pointer">Save</button>
+                        <button type="button" onClick={() => setEditing(false)} className="text-muted hover:text-foreground text-sm px-3 py-1 transition-colors cursor-pointer">Cancel</button>
                     </div>
                 </div>
             )}
