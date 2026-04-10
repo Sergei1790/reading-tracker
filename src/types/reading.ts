@@ -6,4 +6,5 @@ export type Reading = {
   chapter: number;
   status: string;
   rating: number | null;
+  image: string | null;
 };

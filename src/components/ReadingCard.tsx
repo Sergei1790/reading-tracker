@@ -1,14 +1,14 @@
 'use client';
 
 import {deleteReading, updateReading} from '@/lib/actions';
-import {useState} from 'react'
+import {useState} from 'react';
 import StarRating from './StarRating';
-import type { Reading } from '@/types/reading';
+import type {Reading} from '@/types/reading';
 
-const statusColors: Record<string, { dot: string; text: string }> = {
-    reading: { dot: 'bg-success', text: 'text-success' },
-    completed: { dot: 'bg-primary', text: 'text-primary' },
-    dropped: { dot: 'bg-red-400', text: 'text-red-400' },
+const statusColors: Record<string, {dot: string; text: string}> = {
+    reading: {dot: 'bg-success', text: 'text-success'},
+    completed: {dot: 'bg-primary', text: 'text-primary'},
+    dropped: {dot: 'bg-red-400', text: 'text-red-400'},
 };
 
 export default function ReadingCard({reading}: {reading: Reading}) {
@@ -19,62 +19,87 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     const [chapter, setChapter] = useState(reading.chapter);
     const [status, setStatus] = useState(reading.status);
     const [rating, setRating] = useState(reading.rating ?? 0);
+    const [image, setImage] = useState(reading.image ?? null);
 
     async function handleSave() {
-        await updateReading(reading.id, { title, chapter, status, rating: rating || undefined, type, link: link || undefined });
+        await updateReading(reading.id, {title, chapter, status, rating: rating || undefined, type, link: link || undefined, image: image ?? undefined});
         setEditing(false);
     }
 
+    async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        setImage(data.secure_url);
+    }
+
     return (
-        <li className="bg-card border border-white/10 rounded-2xl p-5 hover:border-primary/40 transition-colors">
-            <div className="font-semibold text-foreground text-lg">
-                {link ? (
-                    <a href={link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                        {title}
-                    </a>
-                ) : (
-                    title
-                )}
-            </div>
-            <div className="text-sm text-muted mt-1 flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${statusColors[status]?.dot ?? 'bg-muted'}`} />
-                Chapter {chapter} · <span className={statusColors[status]?.text ?? 'text-muted'}>{status}</span>
-                {rating > 0 && ` · ${rating}★`}
-            </div>
-            <div className="flex gap-3 mt-2">
-                <button type="button" onClick={() => deleteReading(reading.id)} className="text-red-400 text-sm hover:text-red-300 transition-colors cursor-pointer">
-                    Delete
-                </button>
-                {!editing && (
-                    <button type="button" onClick={() => setEditing(true)} className="text-primary text-sm hover:text-primary/70 transition-colors cursor-pointer">
-                        Edit
-                    </button>
-                )}
-            </div>
+        <>
+            <li className="flex items-center gap-4 bg-card border border-white/10 rounded-2xl p-5 hover:border-primary/40 transition-colors">
+                {image ? <img src={image} alt={title} className="w-20 h-28 rounded-xl object-cover shrink-0" /> : <div className="w-20 h-28 rounded-xl bg-accent/40 flex items-center justify-center shrink-0 text-2xl font-bold text-primary">{title.charAt(0).toUpperCase()}</div>}
+                <div className="flex-1 min-w-0 flex flex-col">
+                    <div className="font-semibold text-foreground text-lg">
+                        {link ? (
+                            <a href={link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {title}
+                            </a>
+                        ) : (
+                            title
+                        )}
+                    </div>
+                    <div className="text-sm text-muted mt-1">Chapter {chapter}</div>
+                    <div className="text-sm flex items-center gap-2 mt-1">
+                        <span className={`w-2 h-2 rounded-full ${statusColors[status]?.dot ?? 'bg-muted'}`} />
+                        <span className={statusColors[status]?.text ?? 'text-muted'}>{status}</span>
+                        {rating > 0 && <div className="text-sm text-muted mt-1">{rating}★</div>}
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        {!editing && (
+                            <button type="button" onClick={() => setEditing(true)} className="text-primary text-sm hover:text-primary/70 transition-colors cursor-pointer">
+                                Edit
+                            </button>
+                        )}
+                        <button type="button" onClick={() => deleteReading(reading.id)} className="text-red-400 text-sm hover:text-red-300 transition-colors cursor-pointer">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </li>
             {editing && (
-                <div className="mt-3 space-y-2">
-                    <div className="flex gap-2 items-center flex-wrap">
-                        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setEditing(false)}>
+                    <div className="bg-card border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4 space-y-3" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="font-semibold text-foreground text-lg">Edit</h2>
+                        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                             <option value="manhwa">Manhwa</option>
                             <option value="webnovel">Webnovel</option>
                             <option value="anime">Anime</option>
                         </select>
-                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-24 focus:outline-none focus:border-primary/60 appearance-none" />
-                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60">
+                        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+                        <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" placeholder="Chapter" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 appearance-none" />
+                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                             <option value="reading">Reading</option>
                             <option value="completed">Completed</option>
                             <option value="dropped">Dropped</option>
                         </select>
                         <StarRating value={rating} onChange={setRating} />
-                    </div>
-                    <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
-                    <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
-                    <div className="flex gap-2">
-                        <button type="button" onClick={handleSave} className="bg-primary hover:bg-primary/80 text-white text-sm px-3 py-1 rounded-xl transition-colors cursor-pointer">Save</button>
-                        <button type="button" onClick={() => setEditing(false)} className="text-muted hover:text-foreground text-sm px-3 py-1 transition-colors cursor-pointer">Cancel</button>
+                        <div className="flex gap-3 items-center min-w-0">
+                            {image && <img src={image} alt="current" className="w-16 h-20 rounded-xl object-cover shrink-0" />}
+                            <div className="flex flex-col gap-1 flex-1 min-w-0">
+                                <span className="text-muted text-sm">Replace cover</span>
+                                <input type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
+                            </div>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <button type="button" onClick={handleSave} className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-2 rounded-xl transition-colors cursor-pointer">Save</button>
+                            <button type="button" onClick={() => setEditing(false)} className="text-muted hover:text-foreground text-sm px-3 py-2 transition-colors cursor-pointer">Cancel</button>
+                        </div>
                     </div>
                 </div>
             )}
-        </li>
+        </>
     );
 }

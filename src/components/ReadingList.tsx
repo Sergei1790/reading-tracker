@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import {useSearchParams, useRouter} from 'next/navigation';
 import ReadingCard from './ReadingCard';
 import type { Reading } from '@/types/reading';
 
@@ -8,10 +9,15 @@ const TABS = ['manhwa', 'webnovel', 'anime', 'all'] as const;
 type Tab = typeof TABS[number];
 
 export default function ReadingList({ readings }: { readings: Reading[] }) {
-    const [activeTab, setActiveTab] = useState<Tab>('manhwa');
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const activeTab = (searchParams.get('tab') as Tab) ?? 'manhwa';
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-
+    
+    function setActiveTab(tab: Tab) {
+        router.push(`/?tab=${tab}`);
+    }
     const filtered = (activeTab === 'all' ? readings : readings.filter((r) => r.type === activeTab))
         .filter(r => r.title.toLowerCase().includes(search.toLowerCase()))
         .filter(r => statusFilter === 'all' || r.status === statusFilter);
@@ -62,7 +68,7 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
                     <p className="text-muted/50 text-sm mt-1">Add your first one above</p>
                 </div>
             ) : (
-                <ul className="space-y-3">
+                <ul className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
                     {filtered.map((reading) => (
                         <ReadingCard key={reading.id} reading={reading} />
                     ))}

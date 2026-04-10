@@ -16,7 +16,7 @@ export async function getReadings() {
     return user?.readings ?? [];
 }
 
-export async function createReading(data: {type: string; title: string; link?: string; chapter: number; rating?: number;}) {
+export async function createReading(data: {type: string; title: string; link?: string; chapter: number; rating?: number; image?: string;}) {
     const session = await auth();
     if (!session?.user?.email) throw new Error('Not authenticated');
 
@@ -37,6 +37,7 @@ export async function createReading(data: {type: string; title: string; link?: s
             link: data.link,
             chapter: data.chapter,
             rating: data.rating,
+            image: data.image,
             userId: user.id,
         },
     });
@@ -59,6 +60,7 @@ export async function updateReading(id: number, data: {
     chapter?: number;
     status?: string;
     rating?: number;
+    image?: string;
 }){
     const session = await auth();
     if (!session?.user?.email) throw new Error('Not authenticated');

@@ -26,6 +26,7 @@ model Reading {
   chapter     Int      @default(0)
   status      String   @default("reading")
   rating      Float?
+  image       String?
   notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

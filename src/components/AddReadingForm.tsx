@@ -18,6 +18,17 @@ type FormData = z.infer<typeof schema>;
 
 export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [rating, setRating] = useState(0);
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+    async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if(!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/upload', { method: 'POST', body: formData});
+        const data = await res.json();
+        setImageUrl(data.secure_url);
+    }
 
     const {
         register,
@@ -29,7 +40,7 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
     });
 
     async function onSubmit(data: FormData) {
-        await createReading({...data, rating: rating || undefined});
+        await createReading({...data, rating: rating || undefined, image: imageUrl ?? undefined});
         reset();
         onSuccess?.();
     }
@@ -49,9 +60,13 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
 
             <input {...register('link')} placeholder="Link (optional)" className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
 
-            <input {...register('chapter', { valueAsNumber: true })} type="number" placeholder="Chapter" className="appearance-none border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+            <input {...register('chapter', { setValueAs: (v) => v === '' || isNaN(Number(v)) ? 0 : Number(v) })} type="number" placeholder="Chapter (Optional)" className="appearance-none border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
 
             <StarRating value={rating} onChange={setRating} />
+            
+            <div className="text-muted text-sm mb-2">Cover (optional)</div>
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
+            {imageUrl && <img src={imageUrl} alt="preview" className="w-full rounded-xl object-cover max-h-48" />}
 
             <button type="submit" className="w-full bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-xl transition-colors cursor-pointer font-medium">
                 Add
