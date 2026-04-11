@@ -11,8 +11,11 @@
   --color-success: #00FFCC;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --breakpoint-xs: 430px;
 }
-
+@theme {
+  --breakpoint-xs: 430px;
+}
 body {
   min-height: 100vh;
   background: var(--color-bg);
@@ -29,3 +32,4 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+

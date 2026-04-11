@@ -7,4 +7,5 @@ export type Reading = {
   status: string;
   rating: number | null;
   image: string | null;
+  notes: string | null;
 };

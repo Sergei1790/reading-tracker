@@ -7,7 +7,7 @@ export default function MobileFormSheet() {
     const [open, setOpen] = useState(false);
     return (
         <>
-            <button type="button" onClick={() => setOpen(!open)} className="w-full bg-primary hover:bg-primary/80 text-white py-3 rounded-xl text-sm font-medium cursor-pointer mb-4 md:hidden transition-colors">
+            <button type="button" onClick={() => setOpen(!open)} className="w-full bg-primary hover:bg-primary/80 text-white py-3 rounded-xl text-sm font-medium cursor-pointer mb-4 lg:hidden transition-colors">
                 {open ? 'Close' : '+ Add New'}
             </button>
 

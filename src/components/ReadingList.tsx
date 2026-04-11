@@ -24,42 +24,46 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
 
     return (
         <section className="flex-1 w-full">
-            <div className="flex w-full gap-2 mb-4 flex-wrap">
-                {TABS.map((tab) => {
-                    const count = tab === 'all' ? readings.length : readings.filter(r => r.type === tab).length;
-                    return (
-                        <button
-                            key={tab}
-                            type="button"
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all cursor-pointer focus:outline-none ${
-                                activeTab === tab
-                                    ? 'text-white shadow-lg shadow-primary/30 border border-transparent'
-                                    : 'bg-card border border-transparent text-muted hover:text-foreground hover:border-primary/40'
-                            }`}
-                            style={activeTab === tab ? { background: 'linear-gradient(135deg, var(--color-primary), var(--color-highlight))' } : undefined}
-                        >
-                            {tab} <span className="ml-1 text-xs opacity-70">({count})</span>
-                        </button>
-                    );
-                })}
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search..."
-                    className="flex-1 border border-white/10 bg-card text-foreground placeholder-muted rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60"
-                />
-                <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="border border-white/10 bg-card text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60 cursor-pointer"
-                >
-                    <option value="all">All status</option>
-                    <option value="reading">Reading</option>
-                    <option value="completed">Completed</option>
-                    <option value="dropped">Dropped</option>
-                </select>
+            <div className="flex flex-col-reverse xl:flex-row gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
+                    {TABS.map((tab) => {
+                        const count = tab === 'all' ? readings.length : readings.filter(r => r.type === tab).length;
+                        return (
+                            <button
+                                key={tab}
+                                type="button"
+                                onClick={() => setActiveTab(tab)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all cursor-pointer focus:outline-none ${
+                                    activeTab === tab
+                                        ? 'text-white shadow-lg shadow-primary/30 border border-transparent'
+                                        : 'bg-card border border-transparent text-muted hover:text-foreground hover:border-primary/40'
+                                }`}
+                                style={activeTab === tab ? { background: 'linear-gradient(135deg, var(--color-primary), var(--color-highlight))' } : undefined}
+                            >
+                                {tab} <span className="ml-1 text-xs opacity-70">({count})</span>
+                            </button>
+                        );
+                    })}
+                </div>
+                <div className="flex flex-col xs:flex-row flex-1 gap-2 shrink-0">
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search..."
+                        className="flex-1 border border-white/10 bg-card text-foreground placeholder-muted rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60"
+                    />
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="border border-white/10 bg-card text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60 cursor-pointer"
+                    >
+                        <option value="all">All status</option>
+                        <option value="reading">Reading</option>
+                        <option value="completed">Completed</option>
+                        <option value="dropped">Dropped</option>
+                    </select>
+                </div>
             </div>
             {filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -68,7 +72,7 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
                     <p className="text-muted/50 text-sm mt-1">Add your first one above</p>
                 </div>
             ) : (
-                <ul className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
+                <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(600px,100%),1fr))] gap-4">
                     {filtered.map((reading) => (
                         <ReadingCard key={reading.id} reading={reading} />
                     ))}

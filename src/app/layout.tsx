@@ -29,7 +29,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <header className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <header className="flex flex-col xs:flex-row gap-2 items-center justify-between px-6 py-4 border-b border-white/10">
           <span
             className="font-semibold text-lg bg-clip-text text-transparent"
             style={{ backgroundImage: 'linear-gradient(to right, var(--color-primary), var(--color-highlight))' }}

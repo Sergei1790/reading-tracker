@@ -12,6 +12,7 @@ const schema = z.object({
     title: z.string().min(1, 'Title is required'),
     link: z.string().optional().or(z.literal('')),
     chapter: z.number().min(0),
+    notes: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -67,6 +68,8 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
             <div className="text-muted text-sm mb-2">Cover (optional)</div>
             <input type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
             {imageUrl && <img src={imageUrl} alt="preview" className="w-full rounded-xl object-cover max-h-48" />}
+            
+            <textarea {...register('notes')} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
 
             <button type="submit" className="w-full bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-xl transition-colors cursor-pointer font-medium">
                 Add

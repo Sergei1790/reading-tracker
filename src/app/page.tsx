@@ -15,8 +15,8 @@ export default async function Home() {
                 My Reading List
             </h1>
             <MobileFormSheet />
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-                <aside className="hidden md:block w-72 shrink-0 md:sticky md:top-6">
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
+                <aside className="hidden lg:block w-72 shrink-0 lg:sticky lg:top-6">
                     <AddReadingForm />
                 </aside>
                 <ReadingList readings={readings} />
