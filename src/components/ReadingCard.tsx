@@ -23,12 +23,18 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     const [notes, setNotes] = useState(reading.notes ?? '');
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
-    
+    const [saveError, setSaveError] = useState('');
+    const [deleteError, setDeleteError] = useState('');
+    const [uploadError, setUploadError] = useState('');
+
     async function handleSave() {
         setSaving(true);
+        setSaveError('');
         try {
             await updateReading(reading.id, {title, chapter, status, rating: rating || undefined, type, link: link || undefined, image: image ?? undefined, notes: notes ?? undefined});
             setEditing(false);
+        } catch {
+            setSaveError('Failed to save. Try again.');
         } finally {
             setSaving(false);
         }
@@ -37,11 +43,17 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
-        const data = await res.json();
-        setImage(data.secure_url);
+        setUploadError('');
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (!res.ok) throw new Error('Upload failed');
+            const data = await res.json();
+            setImage(data.secure_url);
+        } catch {
+            setUploadError('Image upload failed.');
+        }
     }
 
     return (
@@ -64,8 +76,11 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                                 <button type="button" onClick={() => setEditing(true)} className="text-primary text-sm hover:text-primary/70 transition-colors cursor-pointer">Edit</button>
                                 <button type="button" onClick={async () => {
                                     setDeleting(true); 
+                                    setDeleteError('');
                                     try {
                                         await deleteReading(reading.id);
+                                    } catch {
+                                        setDeleteError('Failed to delete.');
                                     } finally{
                                         setDeleting(false);
                                     }
@@ -75,6 +90,7 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                                     {deleting ? 'Deleting...' : 'Delete'}
                                 </button>
                             </div>
+                            {deleteError && <p className="text-red-400 text-xs mt-1">{deleteError}</p>}
                         </div>
                         {notes && (
                             <div className="flex gap-3 flex-1 text-sm bg-bg rounded-xl p-3 line-clamp-4">
@@ -109,9 +125,11 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                             <div className="flex flex-col gap-1 flex-1 min-w-0">
                                 <span className="text-muted text-sm">Replace cover</span>
                                 <input type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
+                                {uploadError && <p className="text-red-400 text-sm">{uploadError}</p>}
                             </div>
                         </div>
                         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
+                        {saveError && <p className="text-red-400 text-sm">{saveError}</p>}
                         <div className="flex gap-2 items-center">
                             <button type="button" onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-2 rounded-xl transition-colors cursor-pointer">
                                 {saving ? 'Saving...' : 'Save'}
