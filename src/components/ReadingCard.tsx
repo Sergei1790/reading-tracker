@@ -21,10 +21,17 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     const [rating, setRating] = useState(reading.rating ?? 0);
     const [image, setImage] = useState(reading.image ?? null);
     const [notes, setNotes] = useState(reading.notes ?? '');
-
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    
     async function handleSave() {
-        await updateReading(reading.id, {title, chapter, status, rating: rating || undefined, type, link: link || undefined, image: image ?? undefined, notes: notes ?? undefined});
-        setEditing(false);
+        setSaving(true);
+        try {
+            await updateReading(reading.id, {title, chapter, status, rating: rating || undefined, type, link: link || undefined, image: image ?? undefined, notes: notes ?? undefined});
+            setEditing(false);
+        } finally {
+            setSaving(false);
+        }
     }
 
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -47,7 +54,7 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 flex-1">
                         <div className="flex flex-col min-w-0">
-                            <div className="text-sm text-muted">Chapter {chapter}</div>
+                            <div className="text-sm text-muted">{type === 'anime' ? 'Episode' : 'Chapter'} {chapter}</div>
                             <div className="text-sm flex items-center gap-2 mt-1">
                                 <span className={`w-2 h-2 rounded-full ${statusColors[status]?.dot ?? 'bg-muted'}`} />
                                 <span className={statusColors[status]?.text ?? 'text-muted'}>{status}</span>
@@ -55,7 +62,18 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                             </div>
                             <div className="flex gap-3 mt-auto pt-2">
                                 <button type="button" onClick={() => setEditing(true)} className="text-primary text-sm hover:text-primary/70 transition-colors cursor-pointer">Edit</button>
-                                <button type="button" onClick={() => deleteReading(reading.id)} className="text-red-400 text-sm hover:text-red-300 transition-colors cursor-pointer">Delete</button>
+                                <button type="button" onClick={async () => {
+                                    setDeleting(true); 
+                                    try {
+                                        await deleteReading(reading.id);
+                                    } finally{
+                                        setDeleting(false);
+                                    }
+                                }}
+                                disabled={deleting}
+                                className="text-red-400 text-sm hover:text-red-300 transition-colors cursor-pointer">
+                                    {deleting ? 'Deleting...' : 'Delete'}
+                                </button>
                             </div>
                         </div>
                         {notes && (
@@ -79,7 +97,7 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                         </select>
                         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
                         <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
-                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" placeholder="Chapter" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 appearance-none" />
+                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" placeholder={type === 'anime' ? 'Episode' : 'Chapter'} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 appearance-none" />
                         <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                             <option value="reading">Reading</option>
                             <option value="completed">Completed</option>
@@ -95,7 +113,9 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                         </div>
                         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
                         <div className="flex gap-2 items-center">
-                            <button type="button" onClick={handleSave} className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-2 rounded-xl transition-colors cursor-pointer">Save</button>
+                            <button type="button" onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-2 rounded-xl transition-colors cursor-pointer">
+                                {saving ? 'Saving...' : 'Save'}
+                            </button>
                             <button type="button" onClick={() => setEditing(false)} className="text-muted hover:text-foreground text-sm px-3 py-2 transition-colors cursor-pointer">Cancel</button>
                         </div>
                     </div>
