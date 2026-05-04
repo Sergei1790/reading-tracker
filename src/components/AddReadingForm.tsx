@@ -21,6 +21,7 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
     const [rating, setRating] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [submitError, setSubmitError] = useState('');
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if(!file) return;
@@ -49,11 +50,16 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
     const type = watch('type');
     const progressLabel = type === 'anime' ? 'Episode' : 'Chapter';
     async function onSubmit(data: FormData) {
-        await createReading({...data, rating: rating || undefined, image: imageUrl ?? undefined});
-        reset();
-        setImageUrl(null);
-        setRating(0);
-        onSuccess?.();
+        setSubmitError('');
+        try{
+            await createReading({...data, rating: rating || undefined, image: imageUrl ?? undefined});
+            reset();
+            setImageUrl(null);
+            setRating(0);
+            onSuccess?.();
+        } catch {
+            setSubmitError('Failed to add reading. Try again.');
+        }
     }
 
     return (
@@ -81,6 +87,7 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
             
             <textarea {...register('notes')} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
 
+            {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
             <button type="submit" disabled={uploading || isSubmitting} className="w-full bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-xl transition-colors cursor-pointer font-medium">
                 {isSubmitting ? 'Adding...' : uploading ? 'Uploading image...' : "Add"}
             </button>

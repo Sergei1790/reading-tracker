@@ -17,41 +17,51 @@ export async function getReadings() {
 }
 
 export async function createReading(data: {type: string; title: string; link?: string; chapter: number; rating?: number; image?: string; notes?: string;}) {
-    const session = await auth();
-    if (!session?.user?.email) throw new Error('Not authenticated');
+    try {
+        const session = await auth();
+        if (!session?.user?.email) throw new Error('Not authenticated');
 
-    let user = await prisma.user.findUnique({
-        where: {email: session.user.email},
-    });
-
-    if (!user) {
-        user = await prisma.user.create({
-            data: {email: session.user.email},
+        let user = await prisma.user.findUnique({
+            where: {email: session.user.email},
         });
+
+        if (!user) {
+            user = await prisma.user.create({
+                data: {email: session.user.email},
+            });
+        }
+
+        await prisma.reading.create({
+            data: {
+                type: data.type,
+                title: data.title,
+                link: data.link,
+                chapter: data.chapter,
+                rating: data.rating,
+                image: data.image,
+                notes: data.notes,
+                userId: user.id,
+            },
+        });
+
+        revalidatePath('/');
+    } catch(err){
+        console.error('createReading failed:', err);
+        throw err; 
     }
-
-    await prisma.reading.create({
-        data: {
-            type: data.type,
-            title: data.title,
-            link: data.link,
-            chapter: data.chapter,
-            rating: data.rating,
-            image: data.image,
-            notes: data.notes,
-            userId: user.id,
-        },
-    });
-
-    revalidatePath('/');
 }
 
 export async function deleteReading(id: number){
-    const session = await auth();
-    if (!session?.user?.email) throw new Error('Not authenticated');
+    try{
+        const session = await auth();
+        if (!session?.user?.email) throw new Error('Not authenticated');
 
-    await prisma.reading.delete({ where: { id } });
-    revalidatePath('/');
+        await prisma.reading.delete({ where: { id } });
+        revalidatePath('/');
+    } catch(err){
+        console.error('createReading failed:', err);
+        throw err; 
+    }
 }
 
 export async function updateReading(id: number, data: {
@@ -64,11 +74,16 @@ export async function updateReading(id: number, data: {
     image?: string;
     notes?: string;
 }){
-    const session = await auth();
-    if (!session?.user?.email) throw new Error('Not authenticated');
+    try{
+        const session = await auth();
+        if (!session?.user?.email) throw new Error('Not authenticated');
 
-    await prisma.reading.update({
-        where: { id }, 
-        data,
-    });
+        await prisma.reading.update({
+            where: { id }, 
+            data,
+        });
+    } catch(err){
+        console.error('createReading failed:', err);
+        throw err; 
+    }
 }
