@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 430px;
+}
 @theme inline {
   --color-bg: #0A132F;
   --color-card: #13203F;
@@ -13,9 +16,7 @@
   --font-mono: var(--font-geist-mono);
   --breakpoint-xs: 430px;
 }
-@theme {
-  --breakpoint-xs: 430px;
-}
+
 body {
   min-height: 100vh;
   background: var(--color-bg);
