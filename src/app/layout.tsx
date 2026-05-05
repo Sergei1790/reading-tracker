@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sund Reading Tracker",
+  title: "Sund · Reading Tracker",
   description: "Track your manhwa, webnovels and anime",
 };
 

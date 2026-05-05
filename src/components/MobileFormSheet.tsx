@@ -11,7 +11,7 @@ export default function MobileFormSheet() {
                 {open ? 'Close' : '+ Add New'}
             </button>
 
-            <div className={`md:hidden overflow-hidden transition-all duration-300 ${open ? 'max-h-[800px] mb-4' : 'max-h-0'}`}>
+            <div className={`lg:hidden overflow-hidden transition-all duration-300 ${open ? 'max-h-[800px] mb-4' : 'max-h-0'}`}>
                 <AddReadingForm onSuccess={() => setOpen(false)} />
             </div>
         </>

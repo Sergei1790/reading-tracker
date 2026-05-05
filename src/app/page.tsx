@@ -12,7 +12,7 @@ export default async function Home() {
                 className="text-3xl font-bold mb-8 tracking-tight bg-clip-text text-transparent"
                 style={{ backgroundImage: 'linear-gradient(to right, var(--color-primary), var(--color-highlight))' }}
             >
-                My Reading List
+                My Library
             </h1>
             <MobileFormSheet />
             <div className="flex flex-col lg:flex-row gap-6 items-start">
