@@ -11,16 +11,18 @@ type Tab = typeof TABS[number];
 export default function ReadingList({ readings }: { readings: Reading[] }) {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const activeTab = (searchParams.get('tab') as Tab) ?? 'manhwa';
+    const activeTab = (searchParams.get('tab') as Tab) ?? 'all';
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-    
     function setActiveTab(tab: Tab) {
         router.push(`/?tab=${tab}`);
     }
     const filtered = (activeTab === 'all' ? readings : readings.filter((r) => r.type === activeTab))
         .filter(r => r.title.toLowerCase().includes(search.toLowerCase()))
         .filter(r => statusFilter === 'all' || r.status === statusFilter);
+
+    const rawCount = activeTab === 'all' ? readings.length : readings.filter(r => r.type === activeTab).length;
+    const filteredOut = rawCount > 0 && filtered.length === 0;
 
     return (
         <section className="flex-1 w-full">
@@ -67,9 +69,18 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
             </div>
             {filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="text-5xl mb-4">📚</div>
-                    <p className="text-muted text-lg">No {activeTab} added yet</p>
-                    <p className="text-muted/50 text-sm mt-1">Add your first one above</p>
+                    <div className="text-5xl mb-4">{filteredOut ? '🔍' : '📚'}</div>
+                    {filteredOut ? (
+                        <>
+                            <p className="text-muted text-lg">No matches</p>
+                            <p className="text-muted/50 text-sm mt-1">Try a different search or filter</p>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-muted text-lg">No {activeTab} added yet</p>
+                            <p className="text-muted/50 text-sm mt-1">Add your first one above</p>
+                        </>
+                    )}
                 </div>
             ) : (
                 <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(600px,100%),1fr))] gap-4">
