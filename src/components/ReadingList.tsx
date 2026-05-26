@@ -49,6 +49,7 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
                 </div>
                 <div className="flex flex-col xs:flex-row flex-1 gap-2 shrink-0">
                     <input
+                        aria-label="Search readings"
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -56,6 +57,7 @@ export default function ReadingList({ readings }: { readings: Reading[] }) {
                         className="flex-1 border border-white/10 bg-card text-foreground placeholder-muted rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60"
                     />
                     <select
+                        aria-label="Status filter"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="border border-white/10 bg-card text-foreground rounded-xl px-3 py-2 focus:outline-none focus:border-primary/60 cursor-pointer"
