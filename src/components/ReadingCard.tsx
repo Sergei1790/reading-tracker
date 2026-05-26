@@ -20,6 +20,8 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     const [status, setStatus] = useState(reading.status);
     const [rating, setRating] = useState(reading.rating ?? 0);
     const [image, setImage] = useState(reading.image ?? null);
+    const optimizedImage = image ? image.replace('/upload', '/upload/w_200,h_300,c_fill,f_auto,q_auto/') : null;
+    const editPreview = image ? image.replace('/upload/', '/upload/w_128,c_limit,f_auto,q_auto/') : null;
     const [notes, setNotes] = useState(reading.notes ?? '');
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -59,7 +61,7 @@ export default function ReadingCard({reading}: {reading: Reading}) {
     return (
         <>
             <li className="flex gap-4 items-center bg-card border border-white/10 rounded-2xl p-5 hover:border-primary/40 transition-colors">
-                {image ? <img src={image} alt={title} className="w-20 h-28 rounded-xl object-cover shrink-0" /> : <div className="w-20 h-28 rounded-xl bg-accent/40 flex items-center justify-center shrink-0 text-2xl font-bold text-primary">{title.charAt(0).toUpperCase()}</div>}
+                {optimizedImage ? <img src={optimizedImage} alt={title} className="w-20 h-28 rounded-xl object-cover shrink-0" /> : <div className="w-20 h-28 rounded-xl bg-accent/40 flex items-center justify-center shrink-0 text-2xl font-bold text-primary">{title.charAt(0).toUpperCase()}</div>}
                 <div className="flex-1 min-w-0 flex flex-col gap-2">
                     <div className="font-semibold text-foreground text-lg truncate">
                         {link ? <a href={link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{title}</a> : title}
@@ -106,29 +108,29 @@ export default function ReadingCard({reading}: {reading: Reading}) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setEditing(false)}>
                     <div className="bg-card border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4 space-y-3 overflow-y-auto max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
                         <h2 className="font-semibold text-foreground text-lg">Edit</h2>
-                        <select value={type} onChange={(e) => setType(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
+                        <select aria-label="Type" value={type} onChange={(e) => setType(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                             <option value="manhwa">Manhwa</option>
                             <option value="webnovel">Webnovel</option>
                             <option value="anime">Anime</option>
                         </select>
-                        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
-                        <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
-                        <input value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" placeholder={type === 'anime' ? 'Episode' : 'Chapter'} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 appearance-none" />
-                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
+                        <input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+                        <input aria-label="Link" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link" className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+                        <input aria-label={type === 'anime' ? 'Episode number' : 'Chapter number'} value={chapter} onChange={(e) => setChapter(Number(e.target.value))} type="number" placeholder={type === 'anime' ? 'Episode' : 'Chapter'} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 appearance-none" />
+                        <select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                             <option value="reading">Reading</option>
                             <option value="completed">Completed</option>
                             <option value="dropped">Dropped</option>
                         </select>
                         <StarRating value={rating} onChange={setRating} />
                         <div className="flex gap-3 items-center min-w-0">
-                            {image && <img src={image} alt="current" className="w-16 h-20 rounded-xl object-cover shrink-0" />}
+                            {editPreview && <img src={editPreview} alt="current" className="w-16 h-20 rounded-xl object-cover shrink-0" />}
                             <div className="flex flex-col gap-1 flex-1 min-w-0">
                                 <span className="text-muted text-sm">Replace cover</span>
-                                <input type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
+                                <input aria-label="Replace cover image" type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
                                 {uploadError && <p className="text-red-400 text-sm">{uploadError}</p>}
                             </div>
                         </div>
-                        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
+                        <textarea aria-label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
                         {saveError && <p className="text-red-400 text-sm">{saveError}</p>}
                         <div className="flex gap-2 items-center">
                             <button type="button" onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/80 text-white text-sm px-4 py-2 rounded-xl transition-colors cursor-pointer">

@@ -20,6 +20,7 @@ type FormData = z.infer<typeof schema>;
 export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }) {
     const [rating, setRating] = useState(0);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const preview = imageUrl ? imageUrl.replace('/upload/', '/upload/w_600,c_limit,f_auto,q_auto/') : null;
     const [uploading, setUploading] = useState(false);
     const [submitError, setSubmitError] = useState('');
     async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,26 +67,26 @@ export default function AddReadingForm({ onSuccess }: { onSuccess?: () => void }
         <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-white/10 rounded-2xl p-5 space-y-3">
             <h2 className="font-semibold text-foreground text-lg">Add New</h2>
 
-            <select {...register('type')} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
+            <select aria-label="Type" {...register('type')} className="border border-white/10 bg-bg text-foreground rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60">
                 <option value="manhwa">Manhwa</option>
                 <option value="webnovel">Webnovel</option>
                 <option value="anime">Anime</option>
             </select>
 
-            <input {...register('title')} placeholder="Title" type="text" className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+            <input {...register('title')} aria-label="Title" placeholder="Title" type="text" className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
             {errors.title && <p className="text-red-400 text-sm">{errors.title.message}</p>}
 
-            <input {...register('link')} placeholder="Link (optional)" className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+            <input {...register('link')} aria-label="Link" placeholder="Link (optional)" className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
 
-            <input {...register('chapter', { setValueAs: (v) => v === '' || isNaN(Number(v)) ? 0 : Number(v) })} type="number" placeholder={`${progressLabel} (Optional)`} className="appearance-none border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
+            <input {...register('chapter', { setValueAs: (v) => v === '' || isNaN(Number(v)) ? 0 : Number(v) })} aria-label={`${progressLabel} number`} type="number" placeholder={`${progressLabel} (Optional)`} className="appearance-none border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60" />
 
             <StarRating value={rating} onChange={setRating} />
             
             <div className="text-muted text-sm mb-2">Cover (optional)</div>
-            <input key={imageUrl ?? 'empty'} type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
-            {imageUrl && <img src={imageUrl} alt="preview" className="w-full rounded-xl object-cover max-h-48" />}
+            <input key={imageUrl ?? 'empty'} aria-label="Cover image" type="file" accept="image/*" onChange={handleImageUpload} className="border border-white/10 bg-bg text-muted rounded-xl px-3 py-2 w-full focus:outline-none cursor-pointer" />
+            {preview && <img src={preview} alt="preview" className="w-full rounded-xl object-cover max-h-48" />}
             
-            <textarea {...register('notes')} placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
+            <textarea {...register('notes')} aria-label="Notes" placeholder="Notes (optional)" rows={3} className="border border-white/10 bg-bg text-foreground placeholder-muted rounded-xl px-3 py-2 w-full focus:outline-none focus:border-primary/60 resize-none" />
 
             {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
             <button type="submit" disabled={uploading || isSubmitting} className="w-full bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-xl transition-colors cursor-pointer font-medium">
