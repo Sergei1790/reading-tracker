@@ -21,6 +21,11 @@ export default function SignInPage() {
                         Sign in with Google
                     </button>
                 </form>
+                <form action={async () => { 'use server'; await signIn('demo', { redirectTo: '/' }); }}>
+                    <button type="submit" className="w-full bg-card border border-white/10 hover:border-primary/40 text-foreground py-2 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2">
+                        Try the Demo
+                    </button>
+                </form>
             </div>
         </main>
     );
