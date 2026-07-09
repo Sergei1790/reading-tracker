@@ -4,6 +4,7 @@ Track your manhwa, webnovels, and anime — with cover images, ratings, notes, a
 Built with Next.js 15, TypeScript, Prisma, and Cloudinary.
 
 **Live demo:** https://reading-tracker-weld.vercel.app/
+No signup needed - click **Try the demo** on the sign-in page.
 
 ![screenshot](./public/screenshot.png)
 
@@ -20,6 +21,9 @@ Built with Next.js 15, TypeScript, Prisma, and Cloudinary.
 - Mobile-responsive: sidebar form on desktop, sheet on mobile
 - Inline edit with modal
 - Loading + error states for all mutations
+- **Demo mode** - one-click demo login with seeded data, auto-reset daily via Vercel cron
+- Error tracking with Sentry
+- Unit tests (Vitest + React Testing Library) run in CI (GitHub Actions)
 
 ## Stack
 
@@ -29,8 +33,10 @@ Built with Next.js 15, TypeScript, Prisma, and Cloudinary.
 - **Auth:** NextAuth v5
 - **Forms:** React Hook Form + Zod validation
 - **Image upload:** Cloudinary
+- **Error tracking:** Sentry
 - **Styling:** Tailwind CSS v4
-- **Deploy:** Vercel
+- **Tests:** Vitest + React Testing Library
+- **Deploy / CI:** Vercel + GitHub Actions
 
 ## Local setup
 
