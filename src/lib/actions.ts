@@ -56,7 +56,10 @@ export async function deleteReading(id: number){
         const session = await auth();
         if (!session?.user?.email) throw new Error('Not authenticated');
 
-        await prisma.reading.delete({ where: { id } });
+        const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+        if (!user) throw new Error('Not authenticated');
+
+        await prisma.reading.deleteMany({ where: { id, userId: user.id } })
         revalidatePath('/');
     } catch(err){
         console.error('createReading failed:', err);
@@ -78,10 +81,10 @@ export async function updateReading(id: number, data: {
         const session = await auth();
         if (!session?.user?.email) throw new Error('Not authenticated');
 
-        await prisma.reading.update({
-            where: { id }, 
-            data,
-        });
+        const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+        if (!user) throw new Error('Not authenticated');
+
+        await prisma.reading.updateMany({ where: { id, userId: user.id }, data })
     } catch(err){
         console.error('createReading failed:', err);
         throw err; 
